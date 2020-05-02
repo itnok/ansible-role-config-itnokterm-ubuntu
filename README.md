@@ -1,7 +1,7 @@
 config-itnokterm-ubuntu
 =======================
 
-[![Build Status](https://travis-ci.org/itnok/ansible-role-config-itnokterm-ubuntu.svg?branch=master)](https://travis-ci.org/itnok/ansible-role-config-itnokterm-ubuntu) [![GitHub tag](https://img.shields.io/github/v/tag/itnok/ansible-role-config-itnokterm-ubuntu?sort=semver)](https://github.com/itnok/ansible-role-config-itnokterm-ubuntu/tags/) [![Ansible Role](https://img.shields.io/ansible/role/????)](https://galaxy.ansible.com/itnok/config_itnokterm_ubuntu)
+[![Build Status](https://travis-ci.org/itnok/ansible-role-config-itnokterm-ubuntu.svg?branch=master)](https://travis-ci.org/itnok/ansible-role-config-itnokterm-ubuntu) [![GitHub tag](https://img.shields.io/github/v/tag/itnok/ansible-role-config-itnokterm-ubuntu?sort=semver)](https://github.com/itnok/ansible-role-config-itnokterm-ubuntu/tags/) [![Ansible Role](https://img.shields.io/ansible/role/48400)](https://galaxy.ansible.com/itnok/config_itnokterm_ubuntu)
 
 Clone itnok-term GitHub repo in user's $HOME and configure the account to use it.
 
@@ -15,7 +15,7 @@ Steps performed are:
   - Clone `itnok-term` repository in `~/.custom`
   - Install NVM v0.35.3 & Node.js v12.16.2
   - Install Powerline modules
-  - Create symbolic links for all needed files in $HOME _(:warning: it *OVERWRITES* data eventually present!)_
+  - Create symbolic links for all needed files in $HOME _(:warning: it **OVERWRITES** data eventually present!)_
   - Add custom Gnome Terminal profile
   - Read current list of Gnome Terminal profiles
   - Create new list of Gnome Trminal profiles adding the one from `itnok-term`

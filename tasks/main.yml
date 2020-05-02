@@ -12,7 +12,8 @@
     fail_msg: "Gnome Terminal UUID is NOT valid!"
     success_msg: "Gnome Terminal UUID is VALID!"
 
-- set_fact:
+- name: "Set Gnome Terminal UUID into a dconf-compatible format"
+  set_fact:
     config_itnokterm_dconf_gterm_uuid: "'{{ config_itnokterm_gterm_profile_uuid }}'"
 
 - name: "Install itnok-term customization dependencies"
