@@ -1,0 +1,214 @@
+---
+# tasks file for ansible-role-config-itnokterm-ubuntu
+- include_vars: "main.yml"
+
+- name: "Gather facts"
+  setup:    # equivalent to "gather_facts: yes"
+
+- name: "Check Gnome Terminal UUID profile validity"
+  assert:
+    that:
+      - config_itnokterm_gterm_profile_uuid|lower is regex("^([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-d][0-9a-f]{3}-[0-9a-f]{12}")
+    fail_msg: "Gnome Terminal UUID is NOT valid!"
+    success_msg: "Gnome Terminal UUID is VALID!"
+
+- set_fact:
+    config_itnokterm_dconf_gterm_uuid: "'{{ config_itnokterm_gterm_profile_uuid }}'"
+
+- name: "Install itnok-term customization dependencies"
+  include_role:
+    name: itnok.manage_pkg_ubuntu
+  vars:
+    manage_pkg_repo:
+      - "ppa:mmstick76/alacritty"
+    manage_pkg_app:
+      - "git"
+      - "vim"
+      - "tmux"
+      - "dconf-cli"
+      - "alacritty"
+      - "emacs-nox"
+      - "python3-pip"
+      - "python3-psutil"
+
+- name: "Make sure '~/.ssh' directory exists for '{{ config_itnokterm_user }}'"
+  file:
+    path: "~/.ssh"
+    state: directory
+    mode: 0700
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+
+- name: "Install deploy key for '{{ config_itnokterm_user }}'"
+  copy:
+    content: "{{ config_itnokterm_git_deploy_key }}\n"
+    dest: "~/.ssh/id_rsa_ansible"
+    mode: 0600
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+
+- name: "Make sure '~/.custom' directory exists for '{{ config_itnokterm_user }}'"
+  file:
+    path: "~/.custom"
+    state: directory
+    mode: 0755
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+
+- name: "Install terminal customization for '{{ config_itnokterm_user }}'"
+  git:
+    repo: "git@github.com:itnok/itnok-term.git"
+    dest: "~/.custom/itnok-term"
+    accept_hostkey: yes
+    key_file: "~/.ssh/id_rsa_ansible"
+    force: yes
+    version: "{{ config_itnokterm }}"
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+
+- name: "Install NVM v0.35.3 and Node.js v12.16.2 for '{{ config_itnokterm_user }}'"
+  include_role:
+    name: itnok.install_nvm_ubuntu
+  vars:
+    install_nvm: "v0.35.3"
+    install_nvm_node: "v12.16.2"
+    install_nvm_user: "{{ config_itnokterm_user }}"
+
+- name: "Install Powerline modules for '{{ config_itnokterm_user }}'"
+  pip:
+    name:
+      - "powerline-status"
+      - "powerline-gitstatus"
+    extra_args: "--user"
+    state: present
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+  become_flags: "-i"
+
+- name: "Link customizations in '{{ config_itnokterm_user }}' home directory"
+  file:
+    src: "{{ item.src|default(None) }}"
+    path: "~/{{ item.dest }}"
+    state: "{{ item.state }}"
+    force: yes
+  loop:
+    - { dest: ".config", state: directory }
+    - { dest: ".bashrc", state: absent }
+    - { src: "~/.custom/itnok-term/.bashrc", dest: ".bashrc", state: link }
+    - { dest: ".vim", state: directory }
+    - { dest: ".vim/autoload", state: directory }
+    - { dest: ".vim/plugged", state: directory }
+    - { dest: ".vimrc", state: absent }
+    - { src: "~/.custom/itnok-term/.vimrc", dest: ".vimrc", state: link }
+    - { dest: ".viminfo", state: absent }
+    - { src: "~/.custom/itnok-term/.viminfo", dest: ".viminfo", state: link }
+    - { dest: ".emacs.d", state: absent }
+    - { src: "~/.custom/itnok-term/.emacs.d", dest: ".emacs.d", state: link }
+    - { dest: ".tmux.conf", state: absent }
+    - { src: "~/.custom/itnok-term/.tmux.conf", dest: ".tmux.conf", state: link }
+    - { dest: "teamaxed.sh", state: absent }
+    - { src: "~/.custom/itnok-term/teamaxed.sh", dest: "teamaxed.sh", state: link }
+    - { dest: ".config/alacritty", state: absent }
+    - { src: "~/.custom/itnok-term/.config/alacritty", dest: ".config/alacritty", state: link }
+    - { dest: ".alacritty.yml", state: absent }
+    - { src: "~/.custom/itnok-term/.alacritty.yml", dest: ".alacritty.yml", state: link }
+    - { dest: ".config/powerline", state: absent }
+    - { src: "~/.custom/itnok-term/.config/powerline", dest: ".config/powerline", state: link }
+    - { dest: ".config/fontconfig", state: directory }
+    - { src: "~/.custom/itnok-term/.config/fontconfig/fonts.conf", dest: ".config/fontconfig/fonts.conf", state: link }
+    - { src: "~/.config/fontconfig/fonts.conf", dest: ".fonts.conf", state: link }
+    - { dest: ".fonts", state: directory }
+    - { dest: ".fonts/DroidSans-Bold.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/DroidSans-Bold.ttf", dest: ".fonts/DroidSans-Bold.ttf", state: link }
+    - { dest: ".fonts/DroidSans.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/DroidSans.ttf", dest: ".fonts/DroidSans.ttf", state: link }
+    - { dest: ".fonts/Font Awesome 5 Brands-Regular-400.otf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Font Awesome 5 Brands-Regular-400.otf", dest: ".fonts/Font Awesome 5 Brands-Regular-400.otf", state: link }
+    - { dest: ".fonts/Font Awesome 5 Free-Regular-400.otf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Font Awesome 5 Free-Regular-400.otf", dest: ".fonts/Font Awesome 5 Free-Regular-400.otf", state: link }
+    - { dest: ".fonts/Font Awesome 5 Free-Solid-900.otf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Font Awesome 5 Free-Solid-900.otf", dest: ".fonts/Font Awesome 5 Free-Solid-900.otf", state: link }
+    - { dest: ".fonts/Hack-Bold.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Hack-Bold.ttf", dest: ".fonts/Hack-Bold.ttf", state: link }
+    - { dest: ".fonts/Hack-BoldItalic.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Hack-BoldItalic.ttf", dest: ".fonts/Hack-BoldItalic.ttf", state: link }
+    - { dest: ".fonts/Hack-Italic.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Hack-Italic.ttf", dest: ".fonts/Hack-Italic.ttf", state: link }
+    - { dest: ".fonts/Hack-Regular.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/Hack-Regular.ttf", dest: ".fonts/Hack-Regular.ttf", state: link }
+    - { dest: ".fonts/NotoColorEmoji.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/NotoColorEmoji.ttf", dest: ".fonts/NotoColorEmoji.ttf", state: link }
+    - { dest: ".fonts/NotoEmoji-Regular.ttf", state: absent }
+    - { src: "~/.custom/itnok-term/.fonts/NotoEmoji-Regular.ttf", dest: ".fonts/NotoEmoji-Regular.ttf", state: link }
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+
+- name: "Add custom Gnome Terminal profile"
+  shell: |
+    if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
+      dbus-launch --sh-syntax;
+    fi;
+    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
+    dconf load {{ item.key }} < ~/.custom/itnok-term/.config/custom-dconf/{{ item.conf }}
+  args:
+    executable: "/bin/bash"
+  with_items:
+    - { "key": "/org/gnome/terminal/legacy/profiles:/", "conf": "gnome-terminal-profile.dconf" }
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+  become_flags: "-i"
+
+- name: "Read current Gnome Terminal profiles for '{{ config_itnokterm_user }}'"
+  shell: |
+    if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
+      dbus-launch --sh-syntax;
+    fi;
+    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
+    dconf read /org/gnome/terminal/legacy/profiles:/list
+  args:
+    executable: "/bin/bash"
+  register: config_itnokterm_dconf_gterm_profiles
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+  become_flags: "-i"
+
+- name: "Create new list of Gnome Trminal profiles for '{{ config_itnokterm_user }}'"
+  set_fact:
+    config_itnokterm_dconf_gterm_profile_list: "{{ (config_itnokterm_dconf_gterm_profiles.stdout|default('[]')|length > 0)|ternary(config_itnokterm_dconf_gterm_profiles.stdout, '[]')|regex_replace('\\]', (', '+config_itnokterm_dconf_gterm_uuid+']'))|regex_replace('\\[, ', '[')|string }}"
+
+- name: "Add custom Gnome Terminal profile for '{{ config_itnokterm_user }}'"
+  shell: |
+    if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
+      dbus-launch --sh-syntax;
+    fi;
+    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
+    dconf write /org/gnome/terminal/legacy/profiles:/list "{{ config_itnokterm_dconf_gterm_profile_list }}"
+  args:
+    executable: "/bin/bash"
+  when: not config_itnokterm_dconf_gterm_profiles.stdout is search(config_itnokterm_dconf_gterm_uuid)
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+  become_flags: "-i"
+
+- name: "Make 'itnok' default Gnome Terminal profile for '{{ config_itnokterm_user }}'"
+  shell: |
+    if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
+      dbus-launch --sh-syntax;
+    fi;
+    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
+    dconf write /org/gnome/terminal/legacy/profiles:/default "{{ config_itnokterm_dconf_gterm_uuid }}"
+  args:
+    executable: "/bin/bash"
+  become: yes
+  become_user: "{{ config_itnokterm_user }}"
+  become_method: sudo
+  become_flags: "-i"

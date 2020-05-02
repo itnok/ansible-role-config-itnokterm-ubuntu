@@ -1,0 +1,6 @@
+---
+# defaults file for ansible-role-config-itnokterm-ubuntu
+config_itnokterm_gterm_profile_uuid: "1311470c-c450-1073-773b-e11ee50de666"
+config_itnokterm_git_deploy_key: ""
+config_itnokterm_user: "root"
+config_itnokterm: "master"
