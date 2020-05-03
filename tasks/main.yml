@@ -8,7 +8,7 @@
 - name: "Check Gnome Terminal UUID profile validity"
   assert:
     that:
-      - config_itnokterm_gterm_profile_uuid|lower is regex("^([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-d][0-9a-f]{3}-[0-9a-f]{12}")
+      - config_itnokterm_gterm_profile_uuid|lower is regex("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-d][0-9a-f]{3}-[0-9a-f]{12}")
     fail_msg: "Gnome Terminal UUID is NOT valid!"
     success_msg: "Gnome Terminal UUID is VALID!"
 
