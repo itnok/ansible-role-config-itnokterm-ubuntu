@@ -8,7 +8,7 @@ Clone itnok-term GitHub repo in user's $HOME and configure the account to use it
 Steps performed are:
 
   - Using role [itnok.manage_pkg_ubuntu](https://galaxy.ansible.com/itnok/manage_pkg_ubuntu):
-    * Make sure git, vim, tmux, dconf-cli, alacritty, emacs-nox, python3-pip and python3-psutil packages are installed
+    * Make sure git, vim, tmux, xclip, dconf-cli, alacritty, emacs-nox, python3-pip and python3-psutil packages are installed
   - Make sure `~/.ssh` directory exists
   - Install provided deploy key for itnok-term
   - Make sure `~/.custom` directory exists

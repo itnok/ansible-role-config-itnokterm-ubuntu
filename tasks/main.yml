@@ -26,6 +26,7 @@
       - "git"
       - "vim"
       - "tmux"
+      - "xclip"
       - "dconf-cli"
       - "alacritty"
       - "emacs-nox"
