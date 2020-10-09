@@ -22,6 +22,7 @@
   vars:
     manage_pkg_repo:
       - "ppa:mmstick76/alacritty"
+      - "ppa:jonathonf/vim"
     manage_pkg_app:
       - "git"
       - "vim"
