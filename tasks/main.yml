@@ -74,12 +74,12 @@
   become_user: "{{ config_itnokterm_user }}"
   become_method: sudo
 
-- name: "Install NVM v0.35.3 and Node.js v12.16.2 for '{{ config_itnokterm_user }}'"
+- name: "Install NVM v0.37.0 and Node.js v14.15.1 for '{{ config_itnokterm_user }}'"
   include_role:
     name: itnok.install_nvm_ubuntu
   vars:
-    install_nvm: "v0.35.3"
-    install_nvm_node: "v12.16.2"
+    install_nvm: "v0.37.0"
+    install_nvm_node: "v14.15.1"
     install_nvm_user: "{{ config_itnokterm_user }}"
 
 - name: "Install Powerline modules for '{{ config_itnokterm_user }}'"

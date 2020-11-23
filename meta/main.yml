@@ -38,6 +38,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
       - bionic
+      - focal
 
   galaxy_tags:
     # Maximum 20 tags per role.
