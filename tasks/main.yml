@@ -156,9 +156,8 @@
 - name: "Add custom Gnome Terminal profile"
   shell: |
     if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
-      dbus-launch --sh-syntax;
+      eval "$(dbus-launch --sh-syntax)";
     fi;
-    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
     dconf load {{ item.key }} < ~/.custom/itnok-term/.config/custom-dconf/{{ item.conf }}
   args:
     executable: "/bin/bash"
@@ -172,9 +171,8 @@
 - name: "Read current Gnome Terminal profiles for '{{ config_itnokterm_user }}'"
   shell: |
     if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
-      dbus-launch --sh-syntax;
+      eval "$(dbus-launch --sh-syntax)";
     fi;
-    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
     dconf read /org/gnome/terminal/legacy/profiles:/list
   args:
     executable: "/bin/bash"
@@ -191,9 +189,8 @@
 - name: "Add custom Gnome Terminal profile for '{{ config_itnokterm_user }}'"
   shell: |
     if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
-      dbus-launch --sh-syntax;
+      eval "$(dbus-launch --sh-syntax)";
     fi;
-    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
     dconf write /org/gnome/terminal/legacy/profiles:/list "{{ config_itnokterm_dconf_gterm_profile_list }}"
   args:
     executable: "/bin/bash"
@@ -206,9 +203,8 @@
 - name: "Make 'itnok' default Gnome Terminal profile for '{{ config_itnokterm_user }}'"
   shell: |
     if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
-      dbus-launch --sh-syntax;
+      eval "$(dbus-launch --sh-syntax)";
     fi;
-    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS}";
     dconf write /org/gnome/terminal/legacy/profiles:/default "{{ config_itnokterm_dconf_gterm_uuid }}"
   args:
     executable: "/bin/bash"

@@ -54,4 +54,3 @@ galaxy_info:
   # if you add dependencies to this list.
     - itnok.manage_pkg_ubuntu
     - itnok.install_nvm_ubuntu
-
